@@ -284,7 +284,18 @@ if __name__ == '__main__':
     # Only open browser if not in a cloud environment
     if not os.environ.get('PORT'):
         def open_browser():
-            webbrowser.open(f'http://localhost:{PORT}')
-        threading.Timer(1.0, open_browser).start()
+            url = f'http://localhost:{PORT}'
+            try:
+                if sys.platform == 'darwin':
+                    import subprocess
+                    subprocess.run(['/usr/bin/open', url])
+                elif sys.platform == 'win32':
+                    os.startfile(url)
+                else:
+                    webbrowser.open(url)
+            except Exception as e:
+                print(f"Failed to open browser: {e}")
+                
+        threading.Timer(1.5, open_browser).start()
     
     httpd.serve_forever()
