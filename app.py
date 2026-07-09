@@ -167,17 +167,19 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps(response_data).encode('utf-8'))
             except subprocess.CalledProcessError as e:
-                print(f"yt-dlp error: {e.stderr}")
+                debug_msg = f"yt-dlp error (exit code {e.returncode}):\n{e.stderr}"
+                print(debug_msg)
                 self.send_response(500)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(json.dumps({'error': 'Failed to extract video. It might be private or blocked.'}).encode('utf-8'))
+                self.wfile.write(json.dumps({'error': 'Failed to extract video. It might be private or blocked.', 'debug': debug_msg}).encode('utf-8'))
             except Exception as e:
-                print(f"Error processing video: {e}")
+                debug_msg = f"Python error:\n{str(e)}"
+                print(debug_msg)
                 self.send_response(500)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
+                self.wfile.write(json.dumps({'error': str(e), 'debug': debug_msg}).encode('utf-8'))
                 
         elif parsed_url.path == '/api/download':
             query = parse_qs(parsed_url.query)
