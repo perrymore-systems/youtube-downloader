@@ -120,7 +120,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 return
                 
             # Use yt-dlp to get formats. Use --no-playlist to ensure we only get the single video.
-            cmd = [yt_dlp_exe, '--no-playlist', '-J', url]
+            cmd = [yt_dlp_exe, '--no-playlist', '--extractor-args', 'youtube:player_client=android', '-J', url]
             try:
                 # Capture stderr as well to display useful errors
                 result = subprocess.run(cmd, capture_output=True, text=True, check=True)
@@ -196,7 +196,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             
             # Fetch video info to get the safe title for the filename
             try:
-                info_cmd = [yt_dlp_exe, '--no-playlist', '-J', url]
+                info_cmd = [yt_dlp_exe, '--no-playlist', '--extractor-args', 'youtube:player_client=android', '-J', url]
                 info_result = subprocess.run(info_cmd, capture_output=True, text=True, check=True)
                 info_data = json.loads(info_result.stdout)
                 safe_title = "".join([c for c in info_data.get('title', 'video') if c.isalpha() or c.isdigit() or c==' ']).rstrip()
@@ -212,6 +212,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 yt_dlp_exe,
                 '-f', download_format,
                 '--merge-output-format', 'mp4',
+                '--extractor-args', 'youtube:player_client=android',
                 '--ffmpeg-location', ffmpeg_exe,
                 '-o', out_template,
                 url
