@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -43,25 +43,34 @@ jobs:
 
     - name: Upload Windows Artifact
       if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Infinity-Downloader-Windows
         path: dist/Infinity-Downloader.exe
 
     - name: Upload Mac Artifact
       if: matrix.os == 'macos-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Infinity-Downloader-Mac
         path: Infinity-Downloader-Mac.zip
 
-    - name: Update GitHub Release
+    - name: Update GitHub Release (Windows)
+      if: matrix.os == 'windows-latest'
       uses: softprops/action-gh-release@v1
       with:
         tag_name: latest
         name: Latest Build
-        files: |
-          dist/Infinity-Downloader.exe
-          Infinity-Downloader-Mac.zip
+        files: dist/Infinity-Downloader.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update GitHub Release (Mac)
+      if: matrix.os == 'macos-latest'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: latest
+        name: Latest Build
+        files: Infinity-Downloader-Mac.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
