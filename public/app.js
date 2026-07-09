@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hideError = () => {
         errorMsg.classList.add('hidden');
-        document.getElementById('debug-section').classList.add('hidden');
     };
 
     processBtn.addEventListener('click', async () => {
@@ -38,13 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/api/process?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
-            if (!response.ok) {
-                if (data.debug) {
-                    document.getElementById('debug-output').textContent = data.debug;
-                    document.getElementById('debug-section').classList.remove('hidden');
-                }
-                throw new Error(data.error || 'Failed to process video');
-            }
+            if (!response.ok) throw new Error(data.error || 'Failed to process video');
 
             currentUrl = url;
             
