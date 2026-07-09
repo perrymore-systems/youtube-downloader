@@ -119,13 +119,10 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(b'Missing url parameter')
                 return
                 
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            
-            # Use yt-dlp to get formats
-            cmd = [yt_dlp_exe, '-J', url]
+            # Use yt-dlp to get formats. Use --no-playlist to ensure we only get the single video.
+            cmd = [yt_dlp_exe, '--no-playlist', '-J', url]
             try:
+                # Capture stderr as well to display useful errors
                 result = subprocess.run(cmd, capture_output=True, text=True, check=True)
                 data = json.loads(result.stdout)
                 
@@ -164,10 +161,22 @@ class RequestHandler(SimpleHTTPRequestHandler):
                     'formats': unique_formats
                 }
                 
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
                 self.wfile.write(json.dumps(response_data).encode('utf-8'))
+            except subprocess.CalledProcessError as e:
+                print(f"yt-dlp error: {e.stderr}")
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'error': 'Failed to extract video. It might be private or blocked.'}).encode('utf-8'))
             except Exception as e:
                 print(f"Error processing video: {e}")
                 self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
                 self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
                 
         elif parsed_url.path == '/api/download':
@@ -187,7 +196,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             
             # Fetch video info to get the safe title for the filename
             try:
-                info_cmd = [yt_dlp_exe, '-J', url]
+                info_cmd = [yt_dlp_exe, '--no-playlist', '-J', url]
                 info_result = subprocess.run(info_cmd, capture_output=True, text=True, check=True)
                 info_data = json.loads(info_result.stdout)
                 safe_title = "".join([c for c in info_data.get('title', 'video') if c.isalpha() or c.isdigit() or c==' ']).rstrip()
