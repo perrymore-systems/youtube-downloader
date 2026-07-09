@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity Downloader</title>
+    <meta name="description" content="Download YouTube videos with maximum quality seamlessly.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <header>
+            <h1 class="logo">Infinity<span>DL</span></h1>
+            <p class="subtitle">Extract media instantly.</p>
+        </header>
+
+        <section class="glass-panel">
+            <div class="input-group">
+                <input type="url" id="url-input" placeholder="Paste YouTube link here..." autocomplete="off">
+                <button id="process-btn">
+                    <span class="btn-text">Process</span>
+                    <div class="loader" id="process-loader"></div>
+                </button>
+            </div>
+            
+            <div id="error-message" class="error-msg hidden"></div>
+
+            <div id="result-section" class="result-section hidden">
+                <div class="video-info">
+                    <img id="video-thumb" src="" alt="Thumbnail" class="thumbnail">
+                    <h2 id="video-title" class="video-title"></h2>
+                </div>
+                
+                <div class="download-controls">
+                    <div class="select-wrapper">
+                        <select id="quality-select">
+                            <option value="">Select Quality</option>
+                        </select>
+                    </div>
+                    <button id="download-btn">
+                        <span class="btn-text">Download to PC</span>
+                        <div class="loader" id="download-loader"></div>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
